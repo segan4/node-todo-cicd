@@ -17,6 +17,7 @@ pipeline {
             }
         }
         stage('Deploy') {
+            agent { label 'Agent-1' }
             steps {
                 echo "Deploying todo app"
                 sh 'docker-compose down'
