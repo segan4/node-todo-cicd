@@ -10,8 +10,8 @@ pipeline {
         }
         stage('Build') {
             agent { label 'agent' }
-            echo "Building the image"
             steps {
+                echo "Building the image"
                 sh 'docker build -t todo-app .'
             }
         }
