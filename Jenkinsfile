@@ -9,6 +9,7 @@ pipeline {
             }
         }
         stage('Build') {
+            agent { label 'agent' }
             echo "Building the image"
             steps {
                 sh 'docker build -t todo-app .'
@@ -16,6 +17,7 @@ pipeline {
         }
         stage('Deploy') {
             steps {
+                agent { label 'agent' }
                 echo "Deploying todo app"
                 sh 'docker-compose down'
                 sh 'docker-compose up -d'
