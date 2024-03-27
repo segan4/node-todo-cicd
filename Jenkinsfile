@@ -1,37 +1,25 @@
 pipeline {
-    agent { label 'dev' }
-
+    agent none // This means that the pipeline will not run on any agent by default
     stages {
-
-        stage ('Code') {
+        stage('Clone') {
+            agent { label 'agent' } // This means that this stage will run on an agent with the label 'agent'
             steps {
-                git url: 'https://github.com/ajitfawade/node-todo-cicd.git', branch: 'master'
+                echo "cloning the repository"
+                git 'https://github.com/segan4/node-todo-cicd.git' // This will clone the GitHub repository to the agent's workspace
             }
         }
-        
-        stage ('Build & Test') {
+        stage('Build') {
+            echo "Building the image"
             steps {
-                echo 'Build & Test'
-                sh 'docker build . -t ajitfawade14/node-todo-app:latest'
+                sh 'docker build -t todo-app .'
             }
         }
-        
-        stage ('Login & Push Image') {
+        stage('Deploy') {
             steps {
-                echo 'Logging in to docker hub and pushing image'
-                withCredentials([usernamePassword('credentialsId':'dockerhub', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]){
-                    sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}"
-                    sh "docker image push ajitfawade14/node-todo-app:latest"
-                }
+                echo "Deploying todo app"
+                sh 'docker-compose down'
+                sh 'docker-compose up -d'
             }
         }
-        
-        stage ('Deploy') {
-            steps {
-                echo 'Deploying'
-                sh 'docker-compose down && docker-compose up -d'
-            }
-        }
-
     }
 }
